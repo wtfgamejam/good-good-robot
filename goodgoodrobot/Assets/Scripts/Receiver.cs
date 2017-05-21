@@ -17,7 +17,7 @@ public void button (str3DBbMessage msg) {
 
 		AudioClip playClip;
 		if (clips.Length > 0) {
-			playClip = clips [0];
+			playClip = clips [Random.Range(0,clips.Length - 1)];
 		} else {
 			playClip = audio.clip;
 		}
