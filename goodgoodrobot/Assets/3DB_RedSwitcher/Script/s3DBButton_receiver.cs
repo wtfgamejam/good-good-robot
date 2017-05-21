@@ -29,12 +29,6 @@ public class s3DBButton_receiver : MonoBehaviour {
 	public ste3DBbMats[] materials0;
 	public ste3DBbMats[] materials1;
 
-//	[Header("Send message")] 
-//	public GameObject SendTo0;
-//	public string Message0;
-//	public GameObject SendTo1;
-//	public string Message1;
-
 	bool statePosition; 
 	bool stateRotation;
 	bool stateObjects;
@@ -193,89 +187,4 @@ public class s3DBButton_receiver : MonoBehaviour {
 			r.SetActive (b);
 		}
 	}
-
-//	void switchPosition (){
-//		if (statePosition) {
-//			this.transform.localPosition = position0;
-//			statePosition = false;
-//		} else {
-//			this.transform.localPosition = position1;
-//			statePosition = true;
-//		}
-//		if (position == enum3dBbType.button & statePosition) {
-//			Invoke ("switchPosition", 0.15f);
-//		}
-//	}
-
-//	void switchRotation (){
-//		if (stateRotation) {
-//			this.transform.localRotation = Quaternion.Euler(rotation0.x, rotation0.y, rotation0.z);
-//			stateRotation = false;
-//		} else {
-//			this.transform.localRotation = Quaternion.Euler(rotation1.x, rotation1.y, rotation1.z);
-//			stateRotation = true;
-//		}
-//		if (rotation == enum3dBbType.button & stateRotation) {
-//			Invoke ("switchRotation", 0.15f);
-//		}
-//	}
-
-//	void switchObjects (){
-//		if (stateObjects == true) {
-//
-//			for (int c = 0; c < objects0.Length; c++) {
-//				GameObject r = objects0 [c];
-//				r.SetActive (true);
-//			}
-//			for (int c = 0; c < objects1.Length; c++) {
-//				GameObject r = objects1 [c];
-//				r.SetActive (false);
-//			}
-//			stateObjects = true;
-//
-//		} else {
-//
-//			for (int c = 0; c < objects0.Length; c++) {
-//				GameObject r = objects0 [c];
-//				r.SetActive (false);
-//			}
-//			for (int c = 0; c < objects1.Length; c++) {
-//				GameObject r = objects1 [c];
-//				r.SetActive (true);
-//			}
-//			stateObjects = false;
-//
-//		}
-//		if (objects == enum3dBbType.button & stateObjects) {
-//			Invoke ("switchObjects", 0.15f);
-//		}
-//	}
-
-//	void switchMaterials (){
-//		Renderer rendr = this.GetComponent<Renderer> (); 
-//		Material[] rMats = rendr.materials;
-//
-//		if (stateMaterials) {
-//			for (int c = 0; c < materials0.Length; c++) {
-//				ste3DBbMats r = materials0 [c];
-//				rMats [r.materialID] = r.material;
-//				rendr.materials = rMats;
-//			}
-//			stateMaterials = false;
-//
-//		} else {
-//			for (int c = 0; c < materials1.Length; c++) {
-//				ste3DBbMats r = materials1 [c];
-//				rMats [r.materialID] = r.material;
-//				rendr.materials = rMats;
-//			}
-//			stateMaterials = true;
-//
-//		}
-//		if (materials == enum3dBbType.button & stateMaterials) {
-//
-//			Invoke ("switchMaterials", 0.15f);
-//		}
-//	}
-		
 }

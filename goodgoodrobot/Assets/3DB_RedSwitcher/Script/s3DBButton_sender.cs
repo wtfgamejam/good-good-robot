@@ -10,6 +10,12 @@ public class s3DBButton_sender : MonoBehaviour {
 	public str3DdBbReceiver[] SendToGameObjects;
 	string senderName;
 
+	void Awake()
+	{
+		if(GameManager.Instance == null)
+			GameManager.Instance.Init ();
+	}
+
 	public void SetName(string n)
 	{
 		senderName = n;
@@ -41,6 +47,19 @@ public class s3DBButton_sender : MonoBehaviour {
 		if (Input.GetMouseButtonDown (0)) {
 			SendToObjects ();
 		}
+
+		if (name != null) {
+			GameManager.Instance.DisplayName (senderName);
+		}
 	}
 
+	void OnDrawGizmos()
+	{
+		if (Application.isPlaying) {
+			if (GameManager.Instance.GetCurrentTarget () == this) {
+				Gizmos.color = Color.cyan;
+				Gizmos.DrawWireSphere (transform.position, 0.5f);
+			}
+		}
+	}
 }
