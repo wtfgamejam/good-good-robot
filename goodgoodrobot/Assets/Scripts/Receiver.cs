@@ -15,10 +15,10 @@ public class Receiver : s3DBButton_receiver {
 public void button (str3DBbMessage msg) {
 		//base.button (msg);
 
-		AudioClip playClip;
+		AudioClip playClip = null;
 		if (clips.Length > 0) {
 			playClip = clips [Random.Range(0,clips.Length - 1)];
-		} else {
+		} else if(audio != null) {
 			playClip = audio.clip;
 		}
 
@@ -33,6 +33,8 @@ public void button (str3DBbMessage msg) {
 			motionCoroutine = Movement (motions[currentMotion]);
 			StartCoroutine (motionCoroutine);
 		}
+
+
 }
 		
 	IEnumerator Movement(MotionCurve motion)
