@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour {
-	private static GameManager _instance;
-
-	public static GameManager Instance { get { return _instance; } }
+public class GameManager : Singleton<GameManager> {
 	string[] names = { "Bob", "Steve", "Gunter" };
 	s3DBButton_sender[] objects;
 	public enum RoundState
@@ -18,16 +15,6 @@ public class GameManager : MonoBehaviour {
 	}
 	RoundState currentState;
 	int currentObject = 0;
-
-	private void Awake()
-	{
-		if (_instance != null && _instance != this)
-		{
-			Destroy(this.gameObject);
-		} else {
-			_instance = this;
-		}
-	}
 
 	// Use this for initialization
 	void Start () {
