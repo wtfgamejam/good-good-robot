@@ -8,6 +8,17 @@ using s3DBakers.Buttons;
 public class s3DBButton_sender : MonoBehaviour {
 	
 	public str3DdBbReceiver[] SendToGameObjects;
+	string senderName;
+
+	public void SetName(string n)
+	{
+		senderName = n;
+	}
+
+	public string GetName()
+	{
+		return senderName;
+	}
 
 	public void SendToObjects(){
 		str3DBbMessage msg;
@@ -21,6 +32,8 @@ public class s3DBButton_sender : MonoBehaviour {
 			SendToGameObjects [c].receiver.SendMessage ("button", msg);
 				
 			}
+
+		GameManager.Instance.CheckMessage (this);
 	}
 
 //Just for test

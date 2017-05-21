@@ -29,9 +29,13 @@ public void button (str3DBbMessage msg) {
 		if (msg.actions.position) {
 			if (motionCoroutine != null) {
 				StopCoroutine (motionCoroutine);
+				motionCoroutine = null;
 			}
-			motionCoroutine = Movement (motions[currentMotion]);
-			StartCoroutine (motionCoroutine);
+
+			if (motions.Length > 0) {
+				motionCoroutine = Movement (motions [currentMotion]);
+				StartCoroutine (motionCoroutine);
+			}
 		}
 }
 		
