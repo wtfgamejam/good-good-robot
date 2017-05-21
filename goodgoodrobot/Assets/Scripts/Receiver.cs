@@ -12,6 +12,10 @@ public class Receiver : s3DBButton_receiver {
 	private int currentMotion = 0;
 	private IEnumerator motionCoroutine;
 
+	public MotionCurve[] rotations;
+	private int currentRotation = 0;
+	private IEnumerator rotationCoroutine;
+
 public void button (str3DBbMessage msg) {
 		base.button (msg);
 
@@ -37,8 +41,20 @@ public void button (str3DBbMessage msg) {
 				StartCoroutine (motionCoroutine);
 			}
 		}
+
+		if (msg.actions.rotation) {
+			if (rotationCoroutine != null) {
+				StopCoroutine (rotationCoroutine);
+				rotationCoroutine = null;
+			}
+
+			if (rotations.Length > 0) {
+				rotationCoroutine = Rotation (rotations [currentRotation]);
+				StartCoroutine (rotationCoroutine);
+			}
+		}
 }
-		
+
 	IEnumerator Movement(MotionCurve motion)
 	{
 		transform.localPosition = motion.start;
@@ -64,4 +80,29 @@ public void button (str3DBbMessage msg) {
 		}
 	}
 
+	IEnumerator Rotation(MotionCurve rotation)
+	{
+		transform.localRotation = Quaternion.Euler(rotation.start.x, rotation.start.y, rotation.start.z);
+		float duration = rotation.motionDuration;
+		float elapsed = 0;
+
+		while (elapsed < duration) {
+			elapsed += Time.deltaTime;
+			Vector3 current = rotation.GetValue (elapsed / duration);
+			transform.localRotation = Quaternion.Euler(current.x, current.y, current.z);
+			yield return null;
+		}
+
+		EndRotation (rotation);
+		yield return null;
+	}
+
+	void EndRotation(MotionCurve rotation)
+	{
+		transform.localRotation = Quaternion.Euler(rotation.end.x, rotation.end.y, rotation.end.z);
+		currentRotation++;
+		if (currentRotation > rotations.Length - 1) {
+			currentRotation = 0;
+		}
+	}
 }
