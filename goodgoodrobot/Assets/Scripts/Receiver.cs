@@ -5,7 +5,7 @@ using s3DBakers.Buttons;
 
 public class Receiver : s3DBButton_receiver {
 
-	[SerializeField] AudioSource audio;
+	[SerializeField] AudioSource audioSource;
 	[SerializeField] AudioClip[] clips;
 
 	public MotionCurve[] motions;
@@ -22,12 +22,12 @@ public void button (str3DBbMessage msg) {
 		AudioClip playClip = null;
 		if (clips.Length > 0) {
 			playClip = clips [Random.Range(0,clips.Length - 1)];
-		} else if(audio != null) {
-			playClip = audio.clip;
+		} else if(audioSource != null) {
+			playClip = audioSource.clip;
 		}
 
-		if (audio != null && playClip != null) {
-			audio.PlayOneShot (playClip);
+		if (audioSource != null && playClip != null) {
+			audioSource.PlayOneShot (playClip);
 		}
 
 		if (msg.actions.position) {
