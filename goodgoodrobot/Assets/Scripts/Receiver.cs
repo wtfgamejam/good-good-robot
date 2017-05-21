@@ -13,7 +13,7 @@ public class Receiver : s3DBButton_receiver {
 	private IEnumerator motionCoroutine;
 
 public void button (str3DBbMessage msg) {
-		//base.button (msg);
+		base.button (msg);
 
 		AudioClip playClip = null;
 		if (clips.Length > 0) {
@@ -33,8 +33,6 @@ public void button (str3DBbMessage msg) {
 			motionCoroutine = Movement (motions[currentMotion]);
 			StartCoroutine (motionCoroutine);
 		}
-
-
 }
 		
 	IEnumerator Movement(MotionCurve motion)
