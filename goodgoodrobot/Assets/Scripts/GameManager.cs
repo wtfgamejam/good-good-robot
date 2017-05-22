@@ -32,7 +32,7 @@ public class GameManager : Singleton<GameManager> {
 	IEnumerator sayCoroutine;
 	Text objectLabel;
 	// Use this for initialization
-	void Start () {
+	void Awake () {
 		UnityEngine.Debug.Log ("GM object " + gameObject.name); 
 		objectLabel = FindObjectOfType<Text> ();
 #if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
@@ -92,25 +92,21 @@ public class GameManager : Singleton<GameManager> {
 				currentState = RoundState.StartRound;
 				break;
 			case RoundState.StartRound: // Set up a new Round
-				if (objectPool.Count == 0 || objectPool == null) {
-					UnityEngine.Debug.Log ("GameManger didn't find any panels in the scene");
-					currentState = RoundState.GameOver;
-				} else {
+				if (CheckObjects ()) {
 					currentObject = Random.Range (0, objectPool.Count - 1);
-
 					string objective = "Interact with " + objectPool [currentObject].GetName ();
-					if (CheckObjects ())
-						Say (objective);
-
 					UIManager.Instance.DisplayText (objective);
 					currentState = RoundState.Playing;
+				} else {
+					UnityEngine.Debug.Log ("GameManger didn't find any panels in the scene");
+					currentState = RoundState.GameOver;
 				}
+
 				break;
 			case RoundState.Playing: // if we want stuff to happen during normal play
 
 				break;
 			case RoundState.Success: // the player hit the target
-				//Say ("Success");
 				successCount++;
 				UnityEngine.Debug.Log ("Success Count : " + successCount);
 				if (successRequirements.Length > round && successCount >= successRequirements [round]) {
@@ -120,7 +116,6 @@ public class GameManager : Singleton<GameManager> {
 				}
 				break;
 			case RoundState.Failure:
-				Say ("Failure");
 
 				currentState = RoundState.GameOver;
 				break;
