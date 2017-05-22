@@ -50,6 +50,13 @@ public class s3DBButton_sender : Interactable {
 		GameManager.Instance.CheckMessage (this);
 	}
 
+	public void OnGaze()
+	{
+		if (name != null) {
+			UIManager.Instance.DisplaySenderName (this);
+		}
+	}
+
 //Just for test
 	void OnMouseOver(){
 		if (Input.GetMouseButtonDown (0)) {
