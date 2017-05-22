@@ -6,6 +6,10 @@ using UnityEngine.UI;
 
 public class GameManager : Singleton<GameManager> {
 	string[] names = { "Bob", "Steve", "Gunter", "Sam", "Vent" };
+	int[] successRequirements = { 3, 1 };
+	int[] panelsPerRound = { 1, 2 };
+	int round = 0;
+	int successCount = 0;
 	List<s3DBButton_sender> objectPool = new List<s3DBButton_sender>();
 
 	InteractionPanel[] panels;
@@ -13,7 +17,8 @@ public class GameManager : Singleton<GameManager> {
 
 	public enum RoundState
 	{
-		Setup,
+		StartRound,
+		NextRound,
 		Playing,
 		Success,
 		Failure,
@@ -29,7 +34,7 @@ public class GameManager : Singleton<GameManager> {
 		objectLabel = FindObjectOfType<Text> ();
 		Init ();
 
-		currentState = RoundState.Setup;
+		currentState = RoundState.StartRound;
 		StartCoroutine (Round ());
 	}
 
@@ -38,38 +43,65 @@ public class GameManager : Singleton<GameManager> {
 		// Load up the GameObject Components we need
 		objectPool = new List<s3DBButton_sender>();
 		panels = FindObjectsOfType<InteractionPanel> ();
-
+		round = 0;
+		successCount = 0;
 		AddObjectFromPanels ();
 	}
 
 	void AddObjectFromPanels()
 	{
-		if (panels.Length - 1 >= panelIndex) {
-			s3DBButton_sender[] objects = panels [panelIndex].objects;
-			for (int i = 0; i < objects.Length; i++) {
-				objects[i].SetName(names[Random.Range(0,names.Length - 1)] + i);
-			}
-			objectPool.AddRange (objects);
+		if (panelsPerRound.Length <= round) {
+			round = 0;
 		}
-		panelIndex++;
+		UnityEngine.Debug.Log ("AddObjects for Round " + round);
+		objectPool.Clear ();
+		if (panelsPerRound.Length > round) {
+			panelIndex = panelsPerRound [round];
+			UnityEngine.Debug.Log ("Panel count " + panels.Length + " panelIndex " + panelIndex);
+
+			for (int i = 0; i < panelIndex && i < panels.Length ; i++) 
+			{
+				s3DBButton_sender[] objects = panels [i].objects;
+				for (int j = 0; j < objects.Length; j++) {
+					if(objects[j].GetName() == "")
+						objects [j].SetName (names [Random.Range (0, names.Length - 1)] + j);	
+				}
+				objectPool.AddRange (objects);
+			}
+		}
 	}
 
 	IEnumerator Round()
 	{
 		while (currentState != RoundState.GameOver) {
 			switch (currentState) {
-			case RoundState.Setup: // Set up a new Round
+			case RoundState.NextRound: // increment the round
+				UnityEngine.Debug.Log("Next Round");
+				round++;
+				successCount = 0;
+				AddObjectFromPanels ();
+				currentState = RoundState.StartRound;
+				break;
+			case RoundState.StartRound: // Set up a new Round
 				currentObject = Random.Range (0, objectPool.Count - 1);
-				currentState = RoundState.Playing;
+
 				if(CheckObjects())
 					Say ("Interact with " + objectPool [currentObject].GetName ());
+
+				currentState = RoundState.Playing;
 				break;
-			case RoundState.Playing:
+			case RoundState.Playing: // if we want stuff to happen during normal play
 
 				break;
-			case RoundState.Success:
+			case RoundState.Success: // the player hit the target
 				//Say ("Success");
-				currentState = RoundState.Setup;
+				successCount++;
+				UnityEngine.Debug.Log ("Success Count : " + successCount);
+				if (successRequirements.Length > round && successCount >= successRequirements [round]) {
+					currentState = RoundState.NextRound;
+				} else {
+					currentState = RoundState.StartRound;
+				}
 				break;
 			case RoundState.Failure:
 				Say ("Failure");
@@ -96,7 +128,7 @@ public class GameManager : Singleton<GameManager> {
 			if (sender.gameObject == objectPool [currentObject].gameObject) {
 				currentState = RoundState.Success;
 			} else {
-				UnityEngine.Debug.Log ("Nope " + sender.GetName() + " find " + objectPool [currentObject].GetName());
+				UnityEngine.Debug.Log ("Nope " + sender.GetName());
 			}
 		}
 	}

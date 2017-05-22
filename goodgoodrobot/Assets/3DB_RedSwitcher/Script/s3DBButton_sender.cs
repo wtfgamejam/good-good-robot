@@ -9,7 +9,7 @@ using Valve.VR.InteractionSystem;
 public class s3DBButton_sender : Interactable {
 	
 	public str3DdBbReceiver[] SendToGameObjects;
-	string senderName;
+	string senderName = "";
 
 	void Awake()
 	{
