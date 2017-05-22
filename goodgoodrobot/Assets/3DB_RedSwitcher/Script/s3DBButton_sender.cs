@@ -4,8 +4,9 @@
 using UnityEngine;
 using System.Collections;
 using s3DBakers.Buttons;
+using Valve.VR.InteractionSystem;
 
-public class s3DBButton_sender : MonoBehaviour {
+public class s3DBButton_sender : Interactable {
 	
 	public str3DdBbReceiver[] SendToGameObjects;
 	string senderName;
@@ -14,6 +15,13 @@ public class s3DBButton_sender : MonoBehaviour {
 	{
 		if(GameManager.Instance == null)
 			GameManager.Instance.Init ();
+	}
+
+	private void HandHoverUpdate( Hand hand )
+	{
+		if (hand.controller.GetHairTriggerDown ()) {
+			Debug.Log ("it works");
+		}
 	}
 
 	public void SetName(string n)
