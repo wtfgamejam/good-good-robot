@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Diagnostics;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(UIManager))]
 public class GameManager : Singleton<GameManager> {
@@ -34,6 +35,11 @@ public class GameManager : Singleton<GameManager> {
 	void Start () {
 		UnityEngine.Debug.Log ("GM object " + gameObject.name); 
 		objectLabel = FindObjectOfType<Text> ();
+#if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
+		SceneManager.LoadScene ("macOSPlayer", LoadSceneMode.Additive);
+#else
+		SceneManager.LoadScene ("vivePlayer", LoadSceneMode.Additive);
+#endif
 
 		Init ();
 
