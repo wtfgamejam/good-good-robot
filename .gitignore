@@ -10,3 +10,12 @@ goodgoodrobot/Assets/Sounds/Sci-fi_Evolution.meta
 goodgoodrobot/Assets/Sounds/SoundBits_Buttons-Switches-Levers_v2.meta
 *.meta
 >>>>>>> Stashed changes
+goodgoodrobot.userprefs
+UnityVS.goodgoodrobot.CSharp.csproj
+UnityVS.goodgoodrobot.sln
+UnityVS.goodgoodrobot.CSharp.Editor.csproj
+Assembly-CSharp-Editor.csproj
+Assembly-CSharp-firstpass.csproj
+Assembly-CSharp.csproj
+goodgoodrobot.csproj
+*.csproj
