@@ -44,7 +44,7 @@ public class GameManager : Singleton<GameManager> {
 #else
 		SceneManager.LoadScene ("vivePlayer", LoadSceneMode.Additive);
 #endif
-		UnityEngine.Debug.Log ("Loading Scenes");
+		UIManager.Instance.DisplayText ("Loading Scenes");
 	}
 
 	void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -140,7 +140,7 @@ public class GameManager : Singleton<GameManager> {
 			yield return null;
 		}
 
-		UnityEngine.Debug.Log ("Game Over");
+		UIManager.Instance.DisplayText ("Game Over");
 	}
 
 	bool CheckObjects()

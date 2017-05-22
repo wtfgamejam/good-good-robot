@@ -15,6 +15,7 @@ public class UIManager : Singleton<UIManager> {
 
 	public void DisplayText(string text)
 	{
+		Debug.Log("Display Text: " + text);
 		if(computerDisplay)
 			computerDisplay.DisplayText (text);
 	}
