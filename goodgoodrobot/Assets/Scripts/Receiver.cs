@@ -16,6 +16,9 @@ public class Receiver : s3DBButton_receiver {
 	private int currentRotation = 0;
 	private IEnumerator rotationCoroutine;
 
+	public AnimationClip animationClip;
+
+
 public void button (str3DBbMessage msg) {
 		base.button (msg);
 
@@ -51,6 +54,12 @@ public void button (str3DBbMessage msg) {
 			if (rotations.Length > 0) {
 				rotationCoroutine = Rotation (rotations [currentRotation]);
 				StartCoroutine (rotationCoroutine);
+			}
+		}
+
+		if (msg.actions.animation) {
+			if (animationClip != null) {
+				StartCoroutine(Animate(animationClip));
 			}
 		}
 }
@@ -104,5 +113,22 @@ public void button (str3DBbMessage msg) {
 		if (currentRotation > rotations.Length - 1) {
 			currentRotation = 0;
 		}
+	}
+
+	IEnumerator Animate(AnimationClip animation)
+	{
+		Debug.Log ("animating");
+		float elapsed = 0;
+		while (elapsed < animation.length) {
+			elapsed += Time.deltaTime;
+			animation.SampleAnimation (gameObject, elapsed);
+			yield return null;
+		}
+		StopAnimation (animation);
+	}
+
+	void StopAnimation(AnimationClip animation)
+	{
+		animation.SampleAnimation (gameObject, animation.length);
 	}
 }

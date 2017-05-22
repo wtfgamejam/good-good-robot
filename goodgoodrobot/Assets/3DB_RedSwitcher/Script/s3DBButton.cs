@@ -21,6 +21,7 @@ namespace s3DBakers.Buttons {
 		public bool rotation;  
 		public bool objects;  
 		public bool materials;
+		public bool animation;
 	}
 
 
@@ -30,6 +31,7 @@ namespace s3DBakers.Buttons {
 		public bool rotation;  
 		public bool objects;  
 		public bool materials;
+		public bool animation;
 	}
 
 	[System.Serializable]

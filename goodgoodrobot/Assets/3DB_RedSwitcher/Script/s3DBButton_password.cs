@@ -98,6 +98,7 @@ public class s3DBButton_password : MonoBehaviour {
 				msg.actions.rotation = sendToOpen[a].rotation;
 				msg.actions.objects = sendToOpen[a].objects;
 				msg.actions.materials = sendToOpen[a].materials;
+				msg.actions.animation = sendToOpen[a].animation;
 
 				if (s) {
 					msg.state = enum3DBbState3.turn1; 
