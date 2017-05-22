@@ -93,7 +93,7 @@ public class GameManager : Singleton<GameManager> {
 	public void CheckMessage(s3DBButton_sender sender)
 	{
 		if (currentState == RoundState.Playing) {
-			if (sender.gameObject == objectPool [currentObject].gameObject) {
+			if (objectPool != null && objectPool.Count > 0 && sender.gameObject == objectPool [currentObject].gameObject) {
 				currentState = RoundState.Success;
 			} else {
 				UnityEngine.Debug.Log ("Nope " + sender.GetName() + " find " + objectPool [currentObject].GetName());
