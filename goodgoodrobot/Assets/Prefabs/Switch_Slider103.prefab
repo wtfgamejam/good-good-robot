@@ -118,7 +118,7 @@ GameObject:
   - component: {fileID: 4272323573219414}
   - component: {fileID: 65581382927058518}
   m_Layer: 0
-  m_Name: Switch005_Slider103
+  m_Name: Switch_Slider103
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
