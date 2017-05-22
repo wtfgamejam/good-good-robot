@@ -6,7 +6,11 @@ using UnityEngine.UI;
 
 public class GameManager : Singleton<GameManager> {
 	string[] names = { "Bob", "Steve", "Gunter", "Sam", "Vent" };
-	s3DBButton_sender[] objects;
+	List<s3DBButton_sender> objectPool = new List<s3DBButton_sender>();
+
+	InteractionPanel[] panels;
+	int panelIndex = 0;
+
 	public enum RoundState
 	{
 		Setup,
@@ -22,11 +26,8 @@ public class GameManager : Singleton<GameManager> {
 	Text objectLabel;
 	// Use this for initialization
 	void Start () {
-		objects = FindObjectsOfType<s3DBButton_sender> ();
 		objectLabel = FindObjectOfType<Text> ();
-		for (int i = 0; i < objects.Length; i++) {
-			objects[i].SetName(names[Random.Range(0,names.Length - 1)] + i);
-		}
+		Init ();
 
 		currentState = RoundState.Setup;
 		StartCoroutine (Round ());
@@ -34,25 +35,40 @@ public class GameManager : Singleton<GameManager> {
 
 	public void Init()
 	{
-		UnityEngine.Debug.Log ("Init");
-		// I guess put game startup things here
+		// Load up the GameObject Components we need
+		objectPool = new List<s3DBButton_sender>();
+		panels = FindObjectsOfType<InteractionPanel> ();
+
+		AddObjectFromPanels ();
+	}
+
+	void AddObjectFromPanels()
+	{
+		if (panels.Length - 1 >= panelIndex) {
+			s3DBButton_sender[] objects = panels [panelIndex].objects;
+			for (int i = 0; i < objects.Length; i++) {
+				objects[i].SetName(names[Random.Range(0,names.Length - 1)] + i);
+			}
+			objectPool.AddRange (objects);
+		}
+		panelIndex++;
 	}
 
 	IEnumerator Round()
 	{
 		while (currentState != RoundState.GameOver) {
 			switch (currentState) {
-			case RoundState.Setup:
-				currentObject = Random.Range (0, objects.Length - 1);
+			case RoundState.Setup: // Set up a new Round
+				currentObject = Random.Range (0, objectPool.Count - 1);
 				currentState = RoundState.Playing;
 				if(CheckObjects())
-					Say ("Interact with " + objects [currentObject].GetName ());
+					Say ("Interact with " + objectPool [currentObject].GetName ());
 				break;
 			case RoundState.Playing:
 
 				break;
 			case RoundState.Success:
-				Say ("Success");
+				//Say ("Success");
 				currentState = RoundState.Setup;
 				break;
 			case RoundState.Failure:
@@ -70,17 +86,17 @@ public class GameManager : Singleton<GameManager> {
 
 	bool CheckObjects()
 	{
-		return objects != null && objects.Length > 0;
+		return objectPool != null && objectPool.Count > 0;
 	}
 
 	// See if the sender is the object we want to interact with
 	public void CheckMessage(s3DBButton_sender sender)
 	{
 		if (currentState == RoundState.Playing) {
-			if (sender.gameObject == objects [currentObject].gameObject) {
+			if (sender.gameObject == objectPool [currentObject].gameObject) {
 				currentState = RoundState.Success;
 			} else {
-				UnityEngine.Debug.Log ("Nope " + sender.GetName() + " find " + objects [currentObject].GetName());
+				UnityEngine.Debug.Log ("Nope " + sender.GetName() + " find " + objectPool [currentObject].GetName());
 			}
 		}
 	}
@@ -98,7 +114,7 @@ public class GameManager : Singleton<GameManager> {
 		}
 		sayCoroutine = Speak (command);
 		StartCoroutine (sayCoroutine);
-		UnityEngine.Debug.Log("Say: " + command); 
+		UnityEngine.Debug.Log("Say: " + command);
 	}
 
 	private IEnumerator Speak (string command){
@@ -127,7 +143,7 @@ public class GameManager : Singleton<GameManager> {
 	public s3DBButton_sender GetCurrentTarget()
 	{
 		if (CheckObjects()) {
-			return objects [currentObject];
+			return objectPool [currentObject];
 		} 
 
 		return null;
