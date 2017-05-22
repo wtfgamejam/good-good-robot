@@ -8,14 +8,13 @@ public class UIManager : Singleton<UIManager> {
 	ComputerDisplay computerDisplay;
 	[SerializeField] Text objectLabel;
 
-	void Start()
-	{
-		computerDisplay = FindObjectOfType<ComputerDisplay> ();
-	}
-
 	public void DisplayText(string text)
 	{
 		Debug.Log("Display Text: " + text);
+		if (computerDisplay == null) {
+			computerDisplay = FindObjectOfType<ComputerDisplay> ();
+		}
+
 		if(computerDisplay)
 			computerDisplay.DisplayText (text);
 	}
@@ -26,6 +25,7 @@ public class UIManager : Singleton<UIManager> {
 			objectLabel.canvas.transform.position = sender.gameObject.transform.position;
 
 			objectLabel.text = sender.GetName ();
+			objectLabel.transform.LookAt (Camera.main.transform);
 		}
 	}
 }
