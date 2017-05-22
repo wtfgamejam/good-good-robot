@@ -11,7 +11,7 @@ public class s3DBButton_sender : Interactable {
 	public str3DdBbReceiver[] SendToGameObjects;
 	string senderName = "";
 
-	void Awake()
+	void Start()
 	{
 		if(GameManager.Instance == null)
 			GameManager.Instance.Init ();
@@ -57,7 +57,7 @@ public class s3DBButton_sender : Interactable {
 		}
 
 		if (name != null) {
-			GameManager.Instance.DisplayName (senderName);
+			UIManager.Instance.DisplaySenderName (this);
 		}
 	}
 
