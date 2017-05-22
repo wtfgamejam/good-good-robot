@@ -92,8 +92,8 @@ public class GameManager : Singleton<GameManager> {
 	// See if the sender is the object we want to interact with
 	public void CheckMessage(s3DBButton_sender sender)
 	{
-		if (currentState == RoundState.Playing) {
-			if (objectPool != null && objectPool.Count > 0 && sender.gameObject == objectPool [currentObject].gameObject) {
+		if (currentState == RoundState.Playing && CheckObjects()) {
+			if (sender.gameObject == objectPool [currentObject].gameObject) {
 				currentState = RoundState.Success;
 			} else {
 				UnityEngine.Debug.Log ("Nope " + sender.GetName() + " find " + objectPool [currentObject].GetName());
