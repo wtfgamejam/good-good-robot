@@ -20,7 +20,7 @@ public class s3DBButton_sender : Interactable {
 	private void HandHoverUpdate( Hand hand )
 	{
 		if (hand.controller.GetHairTriggerDown ()) {
-			Debug.Log ("it works");
+			SendToObjects ();
 		}
 	}
 
