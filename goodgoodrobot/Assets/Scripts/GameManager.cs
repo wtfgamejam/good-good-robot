@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Diagnostics;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
+[RequireComponent(typeof(UIManager))]
 public class GameManager : Singleton<GameManager> {
 	string[] names = { "Bob", "Steve", "Gunter", "Sam", "Vent" };
 	int[] successRequirements = { 3, 1 };
@@ -11,7 +13,7 @@ public class GameManager : Singleton<GameManager> {
 	int round = 0;
 	int successCount = 0;
 	List<s3DBButton_sender> objectPool = new List<s3DBButton_sender>();
-
+	ComputerDisplay display;
 	InteractionPanel[] panels;
 	int panelIndex = 0;
 
@@ -31,7 +33,14 @@ public class GameManager : Singleton<GameManager> {
 	Text objectLabel;
 	// Use this for initialization
 	void Start () {
+		UnityEngine.Debug.Log ("GM object " + gameObject.name); 
 		objectLabel = FindObjectOfType<Text> ();
+#if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
+		SceneManager.LoadScene ("macOSPlayer", LoadSceneMode.Additive);
+#else
+		SceneManager.LoadScene ("vivePlayer", LoadSceneMode.Additive);
+#endif
+
 		Init ();
 
 		currentState = RoundState.StartRound;
@@ -83,12 +92,19 @@ public class GameManager : Singleton<GameManager> {
 				currentState = RoundState.StartRound;
 				break;
 			case RoundState.StartRound: // Set up a new Round
-				currentObject = Random.Range (0, objectPool.Count - 1);
+				if (objectPool.Count == 0 || objectPool == null) {
+					UnityEngine.Debug.Log ("GameManger didn't find any panels in the scene");
+					currentState = RoundState.GameOver;
+				} else {
+					currentObject = Random.Range (0, objectPool.Count - 1);
 
-				if(CheckObjects())
-					Say ("Interact with " + objectPool [currentObject].GetName ());
+					string objective = "Interact with " + objectPool [currentObject].GetName ();
+					if (CheckObjects ())
+						Say (objective);
 
-				currentState = RoundState.Playing;
+					UIManager.Instance.DisplayText (objective);
+					currentState = RoundState.Playing;
+				}
 				break;
 			case RoundState.Playing: // if we want stuff to happen during normal play
 
