@@ -16,6 +16,8 @@ public class GameManager : Singleton<GameManager> {
 	ComputerDisplay display;
 	InteractionPanel[] panels;
 	int panelIndex = 0;
+	string macOSScene = "macOSPlayer";
+	string viveScene = "vivePlayer";
 
 	public enum RoundState
 	{
@@ -26,25 +28,39 @@ public class GameManager : Singleton<GameManager> {
 		Failure,
 		GameOver
 	}
+
 	RoundState currentState;
 	int currentObject = 0;
 
 	IEnumerator sayCoroutine;
 	Text objectLabel;
 	// Use this for initialization
-	void Start () {
+	void Awake () {
 		UnityEngine.Debug.Log ("GM object " + gameObject.name); 
+		SceneManager.sceneLoaded += OnSceneLoaded;
 		objectLabel = FindObjectOfType<Text> ();
 #if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
 		SceneManager.LoadScene ("macOSPlayer", LoadSceneMode.Additive);
 #else
 		SceneManager.LoadScene ("vivePlayer", LoadSceneMode.Additive);
 #endif
+		UIManager.Instance.DisplayText ("Loading Scenes");
+	}
 
-		Init ();
+	void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+	{
+		UnityEngine.Debug.Log ("Scene loaded " + scene.name);
+		if (scene.name == macOSScene || scene.name == viveScene) {
+			GameObject player = GameObject.Find("Player");
+			if(player)
+			{
+				player.transform.SetParent(transform);
+			}
+			Init ();
 
-		currentState = RoundState.StartRound;
-		StartCoroutine (Round ());
+			currentState = RoundState.StartRound;
+			StartCoroutine (Round ());
+		}
 	}
 
 	public void Init()
@@ -92,25 +108,21 @@ public class GameManager : Singleton<GameManager> {
 				currentState = RoundState.StartRound;
 				break;
 			case RoundState.StartRound: // Set up a new Round
-				if (objectPool.Count == 0 || objectPool == null) {
-					UnityEngine.Debug.Log ("GameManger didn't find any panels in the scene");
-					currentState = RoundState.GameOver;
-				} else {
+				if (CheckObjects ()) {
 					currentObject = Random.Range (0, objectPool.Count - 1);
-
 					string objective = "Interact with " + objectPool [currentObject].GetName ();
-					if (CheckObjects ())
-						Say (objective);
-
 					UIManager.Instance.DisplayText (objective);
 					currentState = RoundState.Playing;
+				} else {
+					UnityEngine.Debug.Log ("GameManger didn't find any panels in the scene");
+					currentState = RoundState.GameOver;
 				}
+
 				break;
 			case RoundState.Playing: // if we want stuff to happen during normal play
 
 				break;
 			case RoundState.Success: // the player hit the target
-				//Say ("Success");
 				successCount++;
 				UnityEngine.Debug.Log ("Success Count : " + successCount);
 				if (successRequirements.Length > round && successCount >= successRequirements [round]) {
@@ -120,7 +132,6 @@ public class GameManager : Singleton<GameManager> {
 				}
 				break;
 			case RoundState.Failure:
-				Say ("Failure");
 
 				currentState = RoundState.GameOver;
 				break;
@@ -129,7 +140,7 @@ public class GameManager : Singleton<GameManager> {
 			yield return null;
 		}
 
-		UnityEngine.Debug.Log ("Game Over");
+		UIManager.Instance.DisplayText ("Game Over");
 	}
 
 	bool CheckObjects()

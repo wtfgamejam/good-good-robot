@@ -14,7 +14,7 @@ public class ComputerDisplay : MonoBehaviour {
 	public void DisplayText(string text)
 	{
 		if (screenText != null) {
-			screenText.text = text;
+			screenText.text += "\n" + text;
 		}
 	}
 
