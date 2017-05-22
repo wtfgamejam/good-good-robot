@@ -16,6 +16,8 @@ public class GameManager : Singleton<GameManager> {
 	ComputerDisplay display;
 	InteractionPanel[] panels;
 	int panelIndex = 0;
+	string macOSScene = "macOSPlayer";
+	string viveScene = "vivePlayer";
 
 	public enum RoundState
 	{
@@ -26,6 +28,7 @@ public class GameManager : Singleton<GameManager> {
 		Failure,
 		GameOver
 	}
+
 	RoundState currentState;
 	int currentObject = 0;
 
@@ -34,17 +37,30 @@ public class GameManager : Singleton<GameManager> {
 	// Use this for initialization
 	void Awake () {
 		UnityEngine.Debug.Log ("GM object " + gameObject.name); 
+		SceneManager.sceneLoaded += OnSceneLoaded;
 		objectLabel = FindObjectOfType<Text> ();
 #if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
 		SceneManager.LoadScene ("macOSPlayer", LoadSceneMode.Additive);
 #else
 		SceneManager.LoadScene ("vivePlayer", LoadSceneMode.Additive);
 #endif
+		UnityEngine.Debug.Log ("Loading Scenes");
+	}
 
-		Init ();
+	void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+	{
+		UnityEngine.Debug.Log ("Scene loaded " + scene.name);
+		if (scene.name == macOSScene || scene.name == viveScene) {
+			GameObject player = GameObject.Find("Player");
+			if(player)
+			{
+				player.transform.SetParent(transform);
+			}
+			Init ();
 
-		currentState = RoundState.StartRound;
-		StartCoroutine (Round ());
+			currentState = RoundState.StartRound;
+			StartCoroutine (Round ());
+		}
 	}
 
 	public void Init()
