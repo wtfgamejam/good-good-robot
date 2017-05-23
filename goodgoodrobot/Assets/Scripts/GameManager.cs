@@ -8,9 +8,9 @@ using UnityEngine.SceneManagement;
 [RequireComponent(typeof(UIManager))]
 public class GameManager : Singleton<GameManager> {
 	string[] names = { "Bob", "Steve", "Gunter", "Sam", "Vent" };
-	int[] successRequirements = { 3, 1 };
-	int[] panelsPerRound = { 1, 2 };
-	int round = 0;
+	int[] successRequirements = { 3, 1, 2 };
+	int[] panelsPerRound = { 1, 2, 3 };
+	int currentRound = 0;
 	int successCount = 0;
 	List<s3DBButton_sender> objectPool = new List<s3DBButton_sender>();
 	ComputerDisplay display;
@@ -23,11 +23,20 @@ public class GameManager : Singleton<GameManager> {
 	{
 		StartRound,
 		NextRound,
+		CompleteRound,
 		Playing,
 		Success,
 		Failure,
-		GameOver
+		GameOver,
+		Win
 	}
+
+	public struct RoundData
+	{
+		public int successRequirements;
+		public int activePanels;
+	}
+	List<RoundData> rounds = new List<RoundData> ();
 
 	RoundState currentState;
 	int currentObject = 0;
@@ -45,6 +54,10 @@ public class GameManager : Singleton<GameManager> {
 		SceneManager.LoadScene ("vivePlayer", LoadSceneMode.Additive);
 #endif
 		UIManager.Instance.DisplayText ("Loading Scenes");
+
+		rounds.Add (new RoundData () { activePanels = 1, successRequirements = 3});
+		rounds.Add (new RoundData () { activePanels = 2, successRequirements = 3});
+		rounds.Add (new RoundData () { activePanels = 3, successRequirements = 5});
 	}
 
 	void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -68,31 +81,27 @@ public class GameManager : Singleton<GameManager> {
 		// Load up the GameObject Components we need
 		objectPool = new List<s3DBButton_sender>();
 		panels = FindObjectsOfType<InteractionPanel> ();
-		round = 0;
+		currentRound = 0;
 		successCount = 0;
 		AddObjectFromPanels ();
 	}
 
 	void AddObjectFromPanels()
 	{
-		if (panelsPerRound.Length <= round) {
-			round = 0;
-		}
-		UnityEngine.Debug.Log ("AddObjects for Round " + round);
+		UnityEngine.Debug.Log ("AddObjects for Round " + currentRound);
 		objectPool.Clear ();
-		if (panelsPerRound.Length > round) {
-			panelIndex = panelsPerRound [round];
-			UnityEngine.Debug.Log ("Panel count " + panels.Length + " panelIndex " + panelIndex);
 
-			for (int i = 0; i < panelIndex && i < panels.Length ; i++) 
-			{
-				s3DBButton_sender[] objects = panels [i].objects;
-				for (int j = 0; j < objects.Length; j++) {
-					if(objects[j].GetName() == "")
-						objects [j].SetName (names [Random.Range (0, names.Length - 1)] + j);	
-				}
-				objectPool.AddRange (objects);
+		panelIndex = rounds[currentRound].activePanels;
+		UnityEngine.Debug.Log ("Panel count " + panels.Length + " panelIndex " + panelIndex);
+
+		for (int i = 0; i < panelIndex && i < panels.Length ; i++) 
+		{
+			s3DBButton_sender[] objects = panels [i].objects;
+			for (int j = 0; j < objects.Length; j++) {
+				if(objects[j].GetName() == "")
+					objects [j].SetName (names [Random.Range (0, names.Length - 1)] + j);	
 			}
+			objectPool.AddRange (objects);
 		}
 	}
 
@@ -100,10 +109,7 @@ public class GameManager : Singleton<GameManager> {
 	{
 		while (currentState != RoundState.GameOver) {
 			switch (currentState) {
-			case RoundState.NextRound: // increment the round
-				UnityEngine.Debug.Log("Next Round");
-				round++;
-				successCount = 0;
+			case RoundState.NextRound: // set up the round
 				AddObjectFromPanels ();
 				currentState = RoundState.StartRound;
 				break;
@@ -119,20 +125,32 @@ public class GameManager : Singleton<GameManager> {
 				}
 
 				break;
+			case RoundState.CompleteRound:
+				currentRound++;
+				successCount = 0;
+				if (rounds.Count <= currentRound) {
+					currentState = RoundState.Win;
+				} else {
+					currentState = RoundState.NextRound;
+				}
+				break;
 			case RoundState.Playing: // if we want stuff to happen during normal play
 
 				break;
 			case RoundState.Success: // the player hit the target
 				successCount++;
-				UnityEngine.Debug.Log ("Success Count : " + successCount);
-				if (successRequirements.Length > round && successCount >= successRequirements [round]) {
-					currentState = RoundState.NextRound;
+				if (rounds [currentRound].successRequirements <= successCount) {
+					currentState = RoundState.CompleteRound;
 				} else {
 					currentState = RoundState.StartRound;
 				}
 				break;
 			case RoundState.Failure:
 
+				currentState = RoundState.GameOver;
+				break;
+			case RoundState.Win:
+				UIManager.Instance.DisplayText ("YOU WIN");
 				currentState = RoundState.GameOver;
 				break;
 			}
