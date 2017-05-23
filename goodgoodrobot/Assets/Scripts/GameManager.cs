@@ -7,12 +7,10 @@ using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(UIManager))]
 public class GameManager : Singleton<GameManager> {
-	string[] names = { "Bob", "Steve", "Gunter", "Sam", "Vent" };
-	int[] successRequirements = { 3, 1, 2 };
-	int[] panelsPerRound = { 1, 2, 3 };
 	int currentRound = 0;
 	int successCount = 0;
 	List<s3DBButton_sender> objectPool = new List<s3DBButton_sender>();
+	List<string[]> names = new List<string[]> ();
 	ComputerDisplay display;
 	InteractionPanel[] panels;
 	int panelIndex = 0;
@@ -54,6 +52,10 @@ public class GameManager : Singleton<GameManager> {
 		SceneManager.LoadScene ("vivePlayer", LoadSceneMode.Additive);
 #endif
 		UIManager.Instance.DisplayText ("Loading Scenes");
+		names.Add(ShipSystems.engineSystems);
+		names.Add(ShipSystems.lifeSupportSystems);
+		names.Add(ShipSystems.sensorSystem);
+		names.Add(ShipSystems.flightSystem);
 
 		rounds.Add (new RoundData () { activePanels = 1, successRequirements = 3});
 		rounds.Add (new RoundData () { activePanels = 2, successRequirements = 3});
@@ -97,9 +99,10 @@ public class GameManager : Singleton<GameManager> {
 		for (int i = 0; i < panelIndex && i < panels.Length ; i++) 
 		{
 			s3DBButton_sender[] objects = panels [i].objects;
+			string[] potentialNames = names [i];
 			for (int j = 0; j < objects.Length; j++) {
 				if(objects[j].GetName() == "")
-					objects [j].SetName (names [Random.Range (0, names.Length - 1)] + j);	
+					objects [j].SetName (potentialNames [Random.Range (0, potentialNames.Length - 1)] + j);	
 			}
 			objectPool.AddRange (objects);
 		}
@@ -116,7 +119,15 @@ public class GameManager : Singleton<GameManager> {
 			case RoundState.StartRound: // Set up a new Round
 				if (CheckObjects ()) {
 					currentObject = Random.Range (0, objectPool.Count - 1);
-					string objective = "Interact with " + objectPool [currentObject].GetName ();
+					string targetState = "";
+					s3DBButton_sender.SenderState s = objectPool [currentObject].GetState ();
+					if (s == s3DBButton_sender.SenderState.On) {
+						targetState = "off";
+					} else {
+						targetState = "on";
+					}
+
+					string objective = "Turn " + objectPool [currentObject].GetName () + " " + targetState;
 					UIManager.Instance.DisplayText (objective);
 					currentState = RoundState.Playing;
 				} else {

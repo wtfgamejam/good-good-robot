@@ -11,8 +11,16 @@ public class s3DBButton_sender : Interactable {
 	public str3DdBbReceiver[] SendToGameObjects;
 	string senderName = "";
 
+	public enum SenderState
+	{
+		On,
+		Off
+	}
+	SenderState currentState;
+
 	void Start()
 	{
+		currentState = SenderState.On;
 		if(GameManager.Instance == null)
 			GameManager.Instance.Init ();
 	}
@@ -55,6 +63,11 @@ public class s3DBButton_sender : Interactable {
 		if (name != null) {
 			UIManager.Instance.DisplaySenderName (this);
 		}
+	}
+
+	public SenderState GetState()
+	{
+		return currentState;
 	}
 
 //Just for test
