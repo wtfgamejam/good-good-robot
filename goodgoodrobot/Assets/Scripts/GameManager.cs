@@ -161,7 +161,7 @@ public class GameManager : Singleton<GameManager> {
 				currentState = RoundState.GameOver;
 				break;
 			case RoundState.Win:
-				UIManager.Instance.DisplayText ("YOU WIN");
+				
 				currentState = RoundState.GameOver;
 				break;
 			}
@@ -169,7 +169,7 @@ public class GameManager : Singleton<GameManager> {
 			yield return null;
 		}
 
-		UIManager.Instance.DisplayText ("Game Over");
+		SceneManager.LoadScene ("Win", LoadSceneMode.Single);
 	}
 
 	bool CheckObjects()
