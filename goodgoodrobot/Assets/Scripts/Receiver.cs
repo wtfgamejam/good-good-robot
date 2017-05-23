@@ -20,6 +20,8 @@ public class Receiver : s3DBButton_receiver {
 	private int currentAnimation = 0;
 	private IEnumerator animationCoroutine;
 
+	Animator anim;
+
 public void button (str3DBbMessage msg) {
 		base.button (msg);
 
@@ -124,19 +126,23 @@ public void button (str3DBbMessage msg) {
 
 	IEnumerator Animate(AnimationClip animation)
 	{
-		Debug.Log ("animating");
-		float elapsed = 0;
-		while (elapsed < animation.length) {
-			elapsed += Time.deltaTime;
-			animation.SampleAnimation (gameObject, elapsed);
+		if (anim == null) {
+			anim = gameObject.AddComponent<Animator> ();
+			anim.runtimeAnimatorController = GameManager.Instance.animatorController;
+		}
+
+		anim.Play (animation.name);
+
+		while (anim.GetCurrentAnimatorStateInfo (0).IsName (animation.name)) {
 			yield return null;
 		}
+
 		StopAnimation (animation);
 	}
 
 	void StopAnimation(AnimationClip animation)
 	{
-		animation.SampleAnimation (gameObject, animation.length);
+		
 		currentAnimation++;
 		if (currentAnimation > animationClips.Length - 1) {
 			currentAnimation = 0;

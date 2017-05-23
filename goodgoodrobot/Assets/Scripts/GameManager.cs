@@ -17,6 +17,8 @@ public class GameManager : Singleton<GameManager> {
 	string macOSScene = "macOSPlayer";
 	string viveScene = "vivePlayer";
 
+	public RuntimeAnimatorController animatorController;
+
 	public enum RoundState
 	{
 		StartRound,
