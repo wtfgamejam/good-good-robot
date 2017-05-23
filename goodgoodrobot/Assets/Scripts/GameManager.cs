@@ -18,6 +18,7 @@ public class GameManager : Singleton<GameManager> {
 	string viveScene = "vivePlayer";
 
 	public RuntimeAnimatorController animatorController;
+	public AudioClip successAudio;
 
 	public enum RoundState
 	{
@@ -183,7 +184,18 @@ public class GameManager : Singleton<GameManager> {
 	public void CheckMessage(s3DBButton_sender sender)
 	{
 		if (currentState == RoundState.Playing && CheckObjects()) {
+			if (5 == Random.Range (1, 6)) {
+				StoryEvents evs = GetComponent<StoryEvents> ();
+				if (evs != null) {
+					evs.TriggerEvent ();
+				}
+			}
+
 			if (sender.gameObject == objectPool [currentObject].gameObject) {
+				AudioSource source = GetComponent<AudioSource> ();
+				if (source != null && successAudio != null) {
+					source.PlayOneShot (successAudio);
+				}
 				currentState = RoundState.Success;
 			} else {
 				UnityEngine.Debug.Log ("Nope " + sender.GetName());
